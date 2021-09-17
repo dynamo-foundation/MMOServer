@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
 
 namespace MMOServer
 {
@@ -19,7 +21,7 @@ namespace MMOServer
 
         public static string dbUser = "root";
         public static string dbPassword = "walletDYN1042";
-        public static string dbSchema = "dynwallet";
+        public static string dbSchema = "dynammo";
 
         public class WebPack
         {
@@ -330,6 +332,39 @@ namespace MMOServer
                 walletList[to] = w;
             }
         }
+
+
+        public static Boolean ValidateSignature()
+        {
+            string address = "dy1qzvx3yfrucqa2ntsw8e7dyzv6u6dl2c2wjvx5jy";
+            string signature = "Jyv5LFiSCHKmY+DRAK324jlw4PguGdwMG6jdMDO6HQVRUDf4bGMJW+wWFtHoFPMU54lkHISn+ZCQ0Fo3f/Ie6sk=";
+            string message = "123456";
+            string sArgs = address + " " + signature + " " + message;
+
+            Process p = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = @"node.exe",
+                    Arguments = "verify_address.js " + sArgs,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                    WorkingDirectory = @"C:\Users\user\source\repos\MMOServer\MMOServer"
+                }
+            };
+            p.Start();
+            while (!p.HasExited)
+            {
+                Thread.Sleep(100);
+            }
+            Console.WriteLine(p.StandardError.ReadToEnd());
+            Console.WriteLine(p.StandardOutput.ReadToEnd());
+
+            return false;
+        }
+
 
     }
 }
